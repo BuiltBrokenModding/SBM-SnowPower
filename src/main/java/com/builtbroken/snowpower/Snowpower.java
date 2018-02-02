@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class Snowpower
 {
     public static final String DOMAIN = "snowpower";
-    public static final String PREFX = DOMAIN + ":";
+    public static final String PREFIX = DOMAIN + ":";
 
     public static final String MAJOR_VERSION = "@MAJOR@";
     public static final String MINOR_VERSION = "@MINOR@";

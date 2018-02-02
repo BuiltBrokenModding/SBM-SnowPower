@@ -25,8 +25,8 @@ public class BlockSnowGenerator extends BlockContainer
     public BlockSnowGenerator()
     {
         super(Material.ROCK);
-        setUnlocalizedName(Snowpower.PREFX + "generator.snow");
-        setRegistryName(Snowpower.PREFX + "snowgenerator");
+        setUnlocalizedName(Snowpower.PREFIX + "generator.snow");
+        setRegistryName(Snowpower.PREFIX + "snowgenerator");
         setCreativeTab(CreativeTabs.MISC);
         setHardness(1);
     }
