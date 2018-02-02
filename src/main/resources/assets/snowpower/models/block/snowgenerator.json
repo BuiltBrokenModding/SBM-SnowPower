@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "particle": "snowpower:blocks/snowgenerator",
+    "down": "snowpower:blocks/snowgenerator_top",
+    "up": "snowpower:blocks/snowgenerator_top",
+    "north": "snowpower:blocks/snowgenerator",
+    "east": "snowpower:blocks/snowgenerator",
+    "south": "snowpower:blocks/snowgenerator",
+    "west": "snowpower:blocks/snowgenerator"
+  }
+}
