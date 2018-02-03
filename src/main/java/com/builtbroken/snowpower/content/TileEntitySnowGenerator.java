@@ -1,5 +1,6 @@
 package com.builtbroken.snowpower.content;
 
+import com.builtbroken.snowpower.ConfigSnowpower;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -27,7 +28,6 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
 
     public static int CHECK_SNOW_DELAY = 100;
     public static int CONSUME_SNOW_DELAY = 20 * 60;
-    public static int CONSUME_SNOW_DELAY_RANDOM = 100;
 
     public static final String NBT_ENERGY = "energy";
 
@@ -87,7 +87,7 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
         if (snowCheckTick-- <= 0)
         {
             //Reset delay
-            snowConsumeTick = CONSUME_SNOW_DELAY + world.rand.nextInt(CONSUME_SNOW_DELAY_RANDOM);
+            snowConsumeTick = CONSUME_SNOW_DELAY + world.rand.nextInt(ConfigSnowpower.CONSUME_SNOW_DELAY_RANDOM);
 
             //Get state
             BlockPos pos = getPos().up();
