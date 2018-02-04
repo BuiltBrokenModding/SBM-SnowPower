@@ -12,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -43,7 +44,7 @@ public class BlockSnowGenerator extends BlockContainer
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileEntitySnowGenerator)
             {
-                player.sendMessage(new TextComponentString("Power: " + ((TileEntitySnowGenerator) tile).powerStorage.getEnergyStored()));
+                player.sendMessage(new TextComponentString(I18n.translateToLocal("snowgenerator.chat.power") + " " + ((TileEntitySnowGenerator) tile).powerStorage.getEnergyStored()));
             }
         }
         return true;
