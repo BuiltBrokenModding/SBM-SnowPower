@@ -127,34 +127,36 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
      */
     protected void outputPower()
     {
+        //Loop all 6 sides of our block
         for (EnumFacing facing : EnumFacing.values())
         {
-            //Get position
-            BlockPos pos = getPos().add(facing.getDirectionVec());
+            //Get position with offset
+            BlockPos pos = getPos().offset(facing);
 
-            //check the block is loaded
+            //Check the block is loaded to avoid loading extra chunks
             if (world.isBlockLoaded(pos))
             {
-                //Get tile
+                //Get tile from the world
                 TileEntity tile = world.getTileEntity(pos);
 
-                //Check tile exists and has power support
+                //Check tile exists
                 if (tile != null)
                 {
+                    //Check to make sure the tile has the energy capability
                     if(tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite()))
                     {
                         //Get power
                         IEnergyStorage storage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
                         if (storage != null)
                         {
-                            //Figure power we can give
-                            int power = powerStorage.extractEnergy(Integer.MAX_VALUE, true);
+                            //Figure out the power we can give, simulate
+                            int powerToGive = powerStorage.extractEnergy(Integer.MAX_VALUE, true);
 
-                            //Give power
-                            int drained = storage.receiveEnergy(power, false);
+                            //Give power to the tile, get power actually added
+                            int powerGiven = storage.receiveEnergy(powerToGive, false);
 
-                            //Drain power
-                            powerStorage.extractEnergy(drained, false);
+                            //Drain power given from our tile
+                            powerStorage.extractEnergy(powerGiven, false);
                         }
                     }
                 }
