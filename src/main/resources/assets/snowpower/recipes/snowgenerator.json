@@ -1,0 +1,32 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "III",
+    "GFG",
+    "SLS"
+  ],
+  "key": {
+    "I": {
+      "ore": "ingotIron",
+      "type": "forge:ore_dict"
+    },
+    "G": {
+      "ore": "ingotGold",
+      "type": "forge:ore_dict"
+    },
+    "L": {
+      "item": "minecraft:lava_bucket"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    },
+    "S": {
+      "item": "minecraft:magma_cream"
+    }
+  },
+  "result": {
+    "item": "snowpower:snowgenerator",
+    "data": 0,
+    "count": 1
+  }
+}
