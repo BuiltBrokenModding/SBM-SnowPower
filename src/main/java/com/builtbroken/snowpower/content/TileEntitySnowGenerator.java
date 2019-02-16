@@ -1,7 +1,9 @@
 package com.builtbroken.snowpower.content;
 
 import com.builtbroken.snowpower.ConfigSnowpower;
-import net.minecraft.block.BlockSnow;
+import com.builtbroken.snowpower.Snowpower;
+
+import net.minecraft.block.BlockSnowLayer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,11 +12,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidTank;
-
-import javax.annotation.Nullable;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -22,6 +23,11 @@ import javax.annotation.Nullable;
  */
 public class TileEntitySnowGenerator extends TileEntity implements ITickable
 {
+    public TileEntitySnowGenerator()
+    {
+        super(Snowpower.SNOW_GEN_TE_TYPE);
+    }
+
     public static int POWER_CAP = 1000;
     public static int POWER_TRANSFER = 10;
     public static int POWER_CREATION = 1;
@@ -46,7 +52,7 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
     }
 
     @Override
-    public void update()
+    public void tick()
     {
         if(!world.isRemote)
         {
@@ -61,7 +67,7 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
                 IBlockState state = world.getBlockState(pos);
 
                 //Do check
-                hasSnow = state.getBlock() == Blocks.SNOW_LAYER;
+                hasSnow = state.getBlock() == Blocks.SNOW;
             }
 
             if (hasSnow)
@@ -87,28 +93,28 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
         if (snowCheckTick-- <= 0)
         {
             //Reset delay
-            snowConsumeTick = CONSUME_SNOW_DELAY + world.rand.nextInt(ConfigSnowpower.CONSUME_SNOW_DELAY_RANDOM);
+            snowConsumeTick = CONSUME_SNOW_DELAY + world.rand.nextInt(ConfigSnowpower.CONFIG.consumeSnowDelayRandom.get());
 
             //Get state
             BlockPos pos = getPos().up();
             IBlockState state = world.getBlockState(pos);
 
             //Make sure is snow
-            if (state.getBlock() == Blocks.SNOW_LAYER)
+            if (state.getBlock() == Blocks.SNOW)
             {
                 //update layers
-                int layers = state.getValue(BlockSnow.LAYERS);
+                int layers = state.get(BlockSnowLayer.LAYERS);
                 layers -= 1;
 
                 if (layers <= 0)
                 {
                     //Kill block
-                    world.setBlockToAir(pos);
+                    world.setBlockState(pos, Blocks.AIR.getDefaultState());
                 }
                 else
                 {
                     //Output block state
-                    state = state.withProperty(BlockSnow.LAYERS, layers);
+                    state = state.with(BlockSnowLayer.LAYERS, layers);
                     world.setBlockState(pos, state);
                 }
             }
@@ -142,18 +148,21 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
                 //Check tile exists
                 if (tile != null)
                 {
+                    LazyOptional<IEnergyStorage> storage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
+
                     //Check to make sure the tile has the energy capability
-                    if(tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite()))
+                    if(storage.isPresent())
                     {
                         //Get power
-                        IEnergyStorage storage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
-                        if (storage != null)
+                        IEnergyStorage ies = storage.orElse(null); //TODO: this might be wonky, check back later when more examples of power caps are available
+
+                        if(ies != null)
                         {
                             //Figure out the power we can give, simulate
                             int powerToGive = powerStorage.extractEnergy(Integer.MAX_VALUE, true);
 
                             //Give power to the tile, get power actually added
-                            int powerGiven = storage.receiveEnergy(powerToGive, false);
+                            int powerGiven = ies.receiveEnergy(powerToGive, false);
 
                             //Drain power given from our tile
                             powerStorage.extractEnergy(powerGiven, false);
@@ -165,37 +174,23 @@ public class TileEntitySnowGenerator extends TileEntity implements ITickable
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-        super.readFromNBT(compound);
-        compound.setInteger(NBT_ENERGY, powerStorage.getEnergyStored());
+        super.read(compound);
+        compound.putInt(NBT_ENERGY, powerStorage.getEnergyStored());
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-        powerStorage.setEnergy(compound.getInteger(NBT_ENERGY));
-        return super.writeToNBT(compound);
+        powerStorage.setEnergy(compound.getInt(NBT_ENERGY));
+        return super.write(compound);
     }
-
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, EnumFacing side)
     {
-        if (capability == CapabilityEnergy.ENERGY)
-        {
-            return powerStorage != null;
-        }
-        return super.hasCapability(capability, facing);
-    }
-
-    @Override
-    @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        if (capability == CapabilityEnergy.ENERGY)
-        {
-            return (T) powerStorage;
-        }
-        return super.getCapability(capability, facing);
+        if(cap == CapabilityEnergy.ENERGY)
+            return LazyOptional.of(() -> powerStorage).cast();
+        else return LazyOptional.empty();
     }
 }

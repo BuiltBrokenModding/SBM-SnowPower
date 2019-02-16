@@ -1,5 +1,5 @@
 {
-  "type": "forge:ore_shaped",
+  "type": "crafting_shaped",
   "pattern": [
     "III",
     "GFG",
@@ -7,12 +7,10 @@
   ],
   "key": {
     "I": {
-      "ore": "ingotIron",
-      "type": "forge:ore_dict"
+      "item": "minecraft:iron_ingot"
     },
     "G": {
-      "ore": "ingotGold",
-      "type": "forge:ore_dict"
+      "item": "minecraft:gold_ingot"
     },
     "L": {
       "item": "minecraft:lava_bucket"
@@ -26,7 +24,6 @@
   },
   "result": {
     "item": "snowpower:snowgenerator",
-    "data": 0,
     "count": 1
   }
 }

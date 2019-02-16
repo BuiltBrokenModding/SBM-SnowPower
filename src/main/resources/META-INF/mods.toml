@@ -1,0 +1,25 @@
+modLoader="javafml" #mandatory
+loaderVersion="[25,)" #mandatory
+issueTrackerURL="https://github.com/BuiltBrokenModding/SBM-SnowPower/issues"
+displayURL="http://minecraft.curseforge.com/projects/sbm-snow-power"
+authors="BuiltBrokenModding"
+
+[[mods]] #mandatory
+modId="snowpower" #mandatory
+version="0.0.1" #mandatory
+displayName="[SBM] Snow Power" #mandatory
+description='''Using thermal delta to produce power from snow and lava''' #mandatory
+
+[[dependencies.snowpower]]
+    modId="forge"
+    mandatory=true
+    versionRange="[25,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.snowpower]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2]"
+    ordering="NONE"
+    side="BOTH"
